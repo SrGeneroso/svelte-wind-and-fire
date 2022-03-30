@@ -1,4 +1,12 @@
-<slot />
+<script>
+    import NavBar from '$lib/NavBar/NavBar.svelte'
+</script>
 
-<style windi:preflights:global windi:safelist:global>
+<NavBar />
+
+<main>
+    <slot />
+</main>
+
+<style windi:preflights:global windi:safelist:global windi:devtools>
 </style>
