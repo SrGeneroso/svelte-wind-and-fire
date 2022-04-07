@@ -1,6 +1,5 @@
 import adapter from '@sveltejs/adapter-static';
 import preprocess from 'svelte-preprocess';
-import { windi } from 'svelte-windicss-preprocess';
 import WindiCSS from 'vite-plugin-windicss'
 
 
@@ -14,7 +13,14 @@ const config = {
 		adapter: adapter(),
 		vite: {
 			plugins: [WindiCSS()]
-		}
+		},
+		prerender: {
+			crawl: true,
+			enabled: true,
+			onError: 'continue',
+			default: true
+		  },
+		
 	}
 
 };
