@@ -8,11 +8,14 @@ import WindiCSS from 'vite-plugin-windicss'
 const config = {
 	// Consult https://github.com/sveltejs/svelte-preprocess
 	// for more information about preprocessors
-	preprocess: [preprocess(), windi({})],
+	preprocess: [preprocess()],
 
 	kit: {
 		adapter: adapter(),
-	},
+		vite: {
+			plugins: [WindiCSS()]
+		}
+	}
 
 };
 

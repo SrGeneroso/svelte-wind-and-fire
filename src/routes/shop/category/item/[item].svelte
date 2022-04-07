@@ -14,7 +14,6 @@
 	import Accordion from '$lib/Components/UI/Accordion.svelte';
 	export let liked = false;
 	export let item
-console.log(item);
 </script>
 
 <svelte:head>
