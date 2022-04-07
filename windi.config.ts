@@ -8,5 +8,7 @@ export default defineConfig({
 	variants: {},
 	plugins: [
 		require('windicss/plugin/forms'),
+		require('windicss/plugin/typography'),
+		require('windicss/plugin/aspect-ratio'),
 	]
 });

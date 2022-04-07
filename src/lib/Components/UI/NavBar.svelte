@@ -11,7 +11,7 @@
 	export var menuState = MENU_STATE.NONE;
 
 	export const mainMenuItems = [
-		{ ref: '/', label: 'Tienda' },
+		{ ref: '/shop/', label: 'Tienda' },
 		{ ref: '/', label: 'Blog' },
         { ref: '/', label: 'Contacto' },
 	];
@@ -19,7 +19,7 @@
 	export const profileMenuItems = [
 		{ ref: '/', label: 'Perfil' },
 		{ ref: '/', label: 'Opciones' },
-		{ ref: '/', label: 'SignOut' }
+		{ ref: '/auth', label: 'SingIn' }
 	];
 </script>
 
@@ -64,7 +64,7 @@
 			<div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
 				<!-- Logo -->
 				<div class="flex-shrink-0 flex items-center">
-					<img class="block h-8 w-auto" src="avra.svg" alt="Workflow" />
+					<img class="block h-8 w-auto" src="/avra.svg" alt="Workflow" />
 				</div>
 				<!-- END Logo -->
 
@@ -102,7 +102,7 @@
 							aria-haspopup="true"
 						>
 							<span class="sr-only">Open user menu</span>
-							<img class="h-8 w-8 rounded-full" src="defaultUser.svg" alt="User" />
+							<img class="h-8 w-8 rounded-full" src="/defaultUser.svg" alt="User" />
 						</button>
 					</div>
 					<!-- END Profile Icon-->
@@ -124,6 +124,7 @@
 									href={menuItem.ref}
 									class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
 									tabindex="-1"
+									on:click={() => menuState = MENU_STATE.NONE}
 								>
 									{menuItem.label}
 								</a>
@@ -142,14 +143,15 @@
 	{#if menuState === MENU_STATE.MENU}
 		<!-- content here -->
 		<div class="sm:hidden" id="mobile-menu">
-			<div class="pt-2 pb-4 space-y-1">
+			<div class="pt-2 pb-4 space-y-1" transition:slide>
 				<!-- Current: "bg-indigo-50 border-indigo-500 text-indigo-700", Default: "border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700" -->
-				<!-- TODO - Get current session and assign as current with above instructions -->
+				<!-- TODO - Get current session and assign as current with above style -->
 				{#each mainMenuItems as menuItem, index}
 					<a
 						href={menuItem.ref}
 						class="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
-                        transition:slide|local}
+						on:click={() => menuState = MENU_STATE.NONE}
+                        
 					>
 						{menuItem.label}
 					</a>
