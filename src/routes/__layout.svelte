@@ -1,15 +1,28 @@
 <script>
-    import NavBar from '$lib/Components/UI/NavBar.svelte'
-    import 'virtual:windi.css';
-	import { browser } from '$app/env';
+	import NavBar from '$lib/Components/UI/NavBar.svelte';
+	import 'virtual:windi.css';
+	// import { browser } from '$app/env';
 	// @ts-ignore: Cannot find module 'virtual:windi-devtools' or its corresponding type declarations.
-	if (browser) import('virtual:windi-devtools');
+	// if (browser) import('virtual:windi-devtools');
+	import App from '$lib/Firebase/firebase';
+	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
+	import { getAuth, onAuthStateChanged } from 'firebase/auth';
+
+	onMount(() => {
+        const auth = getAuth()
+        onAuthStateChanged(auth, (user)=> {
+            if(user){
+                console.log('user authenticated')
+            }else{
+                goto('/index')
+            }
+        })
+    });
 </script>
 
 <NavBar />
 
 <main>
-    <slot />
+	<slot />
 </main>
-
-

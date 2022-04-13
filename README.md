@@ -1,6 +1,6 @@
 # SvelteKit-TypeScript-WindiCSS
 
-[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/oekazuma/sveltekit-typescript-windicss)
+[![Open in Gitpod](https://gitpod.io/button/open-in-gitpod.svg)](https://gitpod.io/#https://github.com/SrGeneroso/svelte-wind-and-fire)
 
 ## Technology stack
 
@@ -13,3 +13,4 @@ uses the following technologies:
 - [Prettier](https://prettier.io/)
 - [ESLint](https://eslint.org/)
 - [Playwright](https://playwright.dev/)
+- [Firebase](https://firebase.google.com/)
