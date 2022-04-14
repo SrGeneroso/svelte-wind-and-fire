@@ -1,5 +1,5 @@
 <script context="module">
-	import { products } from '$lib/temp/db.js'
+	import { products } from '$lib/db.js'
 	export  function load({ params }) {
     const slug = params.item
 	const item = products.filter((e) => e.reference === slug)[0]

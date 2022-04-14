@@ -1,5 +1,7 @@
 <script>
-	import { fly , slide } from 'svelte/transition';
+	import { userIsLogged, profileMenuStatus } from '$lib/store/authStore';
+
+	import { fly, slide } from 'svelte/transition';
 
 	//ENUM bloqueado https://youtu.be/nPrHbLsqb54
 	export const MENU_STATE = Object.freeze({
@@ -8,19 +10,20 @@
 		MENU: 'Menu'
 	});
 
-	export var menuState = MENU_STATE.NONE;
+	export var menuStatus = MENU_STATE.NONE;
 
 	export const mainMenuItems = [
 		{ ref: '/shop/', label: 'Tienda' },
 		{ ref: '/', label: 'Blog' },
-        { ref: '/', label: 'Contacto' },
+		{ ref: '/', label: 'Contacto' }
 	];
 
-	export const profileMenuItems = [
-		{ ref: '/', label: 'Perfil' },
-		{ ref: '/', label: 'Opciones' },
-		{ ref: '/auth', label: 'SingIn' }
-	];
+	export const hideAndRun = (myAction) => {
+		menuStatus = MENU_STATE.NONE
+		myAction()
+	}
+
+
 </script>
 
 <!-- Navigation Component -->
@@ -33,12 +36,12 @@
 				<button
 					type="button"
 					on:click={() =>
-						menuState === MENU_STATE.MENU
-							? (menuState = MENU_STATE.NONE)
-							: (menuState = MENU_STATE.MENU)}
+						menuStatus === MENU_STATE.MENU
+							? (menuStatus = MENU_STATE.NONE)
+							: (menuStatus = MENU_STATE.MENU)}
 					class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-indigo-500"
 					aria-controls="mobile-menu"
-					aria-expanded={menuState === MENU_STATE.MENU ? true : false}
+					aria-expanded={menuStatus === MENU_STATE.MENU ? true : false}
 				>
 					<span class="sr-only">Open main menu</span>
 					<svg
@@ -53,7 +56,9 @@
 							stroke-linecap="round"
 							stroke-linejoin="round"
 							stroke-width="2"
-							d={menuState === MENU_STATE.MENU ? 'M6 18L18 6M6 6l12 12' : 'M4 6h16M4 12h16M4 18h16'}
+							d={menuStatus === MENU_STATE.MENU
+								? 'M6 18L18 6M6 6l12 12'
+								: 'M4 6h16M4 12h16M4 18h16'}
 						/>
 					</svg>
 				</button>
@@ -94,11 +99,11 @@
 							id="user-menu-button"
 							type="button"
 							on:click={() =>
-								menuState === MENU_STATE.PROFILE
-									? (menuState = MENU_STATE.NONE)
-									: (menuState = MENU_STATE.PROFILE)}
+								menuStatus === MENU_STATE.PROFILE
+									? (menuStatus = MENU_STATE.NONE)
+									: (menuStatus = MENU_STATE.PROFILE)}
 							class="bg-white rounded-full flex text-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-							aria-expanded={menuState === MENU_STATE.PROFILE ? true : false}
+							aria-expanded={menuStatus === MENU_STATE.PROFILE ? true : false}
 							aria-haspopup="true"
 						>
 							<span class="sr-only">Open user menu</span>
@@ -108,23 +113,23 @@
 					<!-- END Profile Icon-->
 
 					<!-- Profile Menu-->
-					{#if menuState === MENU_STATE.PROFILE}
+					{#if menuStatus === MENU_STATE.PROFILE}
 						<div
-							class="origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
+							class="z-1 origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg py-1 bg-white ring-1 ring-black ring-opacity-5 focus:outline-none"
 							role="menu"
 							aria-orientation="vertical"
 							aria-labelledby="user-menu-button"
 							tabindex="-1"
 							transition:fly={{ x: 300, duration: 500 }}
 						>
-							{#each profileMenuItems as menuItem, index}
+							{#each $profileMenuStatus as menuItem, index}
 								<a
 									id="user-menu-item-{index}"
 									role="menuitem"
 									href={menuItem.ref}
 									class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
 									tabindex="-1"
-									on:click={() => menuState = MENU_STATE.NONE}
+									on:click|preventDefault={() => hideAndRun(menuItem.action)}
 								>
 									{menuItem.label}
 								</a>
@@ -140,7 +145,7 @@
 	</div>
 
 	<!-- Mobile menu -->
-	{#if menuState === MENU_STATE.MENU}
+	{#if menuStatus === MENU_STATE.MENU}
 		<!-- content here -->
 		<div class="sm:hidden" id="mobile-menu">
 			<div class="pt-2 pb-4 space-y-1" transition:slide>
@@ -150,8 +155,7 @@
 					<a
 						href={menuItem.ref}
 						class="border-transparent text-gray-500 hover:bg-gray-50 hover:border-gray-300 hover:text-gray-700 block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
-						on:click={() => menuState = MENU_STATE.NONE}
-                        
+						on:click={() => (menuStatus = MENU_STATE.NONE)}
 					>
 						{menuItem.label}
 					</a>

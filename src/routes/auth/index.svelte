@@ -1,38 +1,37 @@
 <script>
-	export let tabSelected = 'register'
-	$: console.log(tabSelected)
+	import {tabStatus, TABS} from '$lib/store/authStore'
+	
 </script>
 
-<div class="min-h-full flex flex-col justify-center py-12 sm:px-6 lg:px-8">
-	
+<div id="containerAuth" class="min-h-full flex flex-col py-12 sm:px-6 lg:px-8">
 	<!-- TABS -->
-	<div>
-		<div class="">
-		  <nav class="relative z-0 rounded-lg shadow flex divide-x divide-gray-200" aria-label="Tabs">
-			<!-- Current: "text-gray-900", Default: "text-gray-500 hover:text-gray-700" -->
-			<a href="#" class={`${tabSelected === "signin" ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'}text-gray-900 rounded-l-lg group relative min-w-0 flex-1 overflow-hidden bg-white py-4 px-4 text-sm font-medium text-center hover:bg-gray-50 focus:z-10`} 
-			on:click={()=> (tabSelected = "signin")}>
-			  <span>Sign In</span>
-			  <span aria-hidden="true" class={`${tabSelected === "signin" ?'bg-indigo-500' : 'bg-transparent'} absolute inset-x-0 bottom-0 h-0.5`}></span>
-			</a>
-	  
-			<a href="#" class={`${tabSelected === "register" ? 'text-gray-900' : 'text-gray-500 hover:text-gray-700'}text-gray-900 rounded-l-lg group relative min-w-0 flex-1 overflow-hidden bg-white py-4 px-4 text-sm font-medium text-center hover:bg-gray-50 focus:z-10`}
-			on:click={()=> (tabSelected = "register")}>
-			  <span>Register</span>
-			  <span aria-hidden="true" class={`${tabSelected === "register" ?'bg-indigo-500' : 'bg-transparent'} absolute inset-x-0 bottom-0 h-0.5`}></span>
-			</a>
-		  </nav>
-		</div>
-	  </div>
-	
+	<nav class="relative z-0 flex justify-evenly " aria-label="Tabs">
+		{#each Object.keys(TABS) as tab}
+			<div
+				class={`${
+					tabStatus === TABS[tab] ? 'text-gray-900 shadow-lg' : 'text-gray-500 hover:text-gray-700 shadow-sm'
+				} text-gray-900 b" rounded-lg group relative min-w-0  overflow-hidden bg-white py-4 px-4 text-sm font-medium text-center hover:bg-gray-50 focus:z-10 cursor-pointer `}
+				on:click={() => ($tabStatus = TABS[tab])}
+			>
+				<span>{TABS[tab].title}</span>
+				<span
+					aria-hidden="true"
+					class={`${
+						$tabStatus === TABS[tab] ? 'bg-indigo-500' : 'bg-transparent'
+					} absolute inset-x-0 bottom-0 h-0.5`}
+				/>
+			</div>
+		{/each}
+	</nav>
+
+	<!-- Header -->
 	<div class="sm:mx-auto sm:w-full sm:max-w-md">
 		<h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-			{`${tabSelected === "register" ? 'Register a new account.' : 'Login into your account'}`}
+			{$tabStatus.header}
 		</h2>
 	</div>
 
-	
-	
+	<!-- FORM -->
 	<div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
 		<div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10">
 			<form class="space-y-6" action="/" method="POST">
@@ -64,29 +63,33 @@
 					</div>
 				</div>
 
-				<div class="flex items-center justify-between">
-					<div class="flex items-center">
-						<input
-							id="remember-me"
-							name="remember-me"
-							type="checkbox"
-							class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
-						/>
-						<label for="remember-me" class="ml-2 block text-sm text-gray-900"> Remember me </label>
-					</div>
+				{#if $tabStatus.showActions}
+					<div class="flex items-center justify-between">
+						<div class="flex items-center">
+							<input
+								id="remember-me"
+								name="remember-me"
+								type="checkbox"
+								class="h-4 w-4 text-indigo-600 focus:ring-indigo-500 border-gray-300 rounded"
+							/>
+							<label for="remember-me" class="ml-2 block text-sm text-gray-900">
+								Remember me
+							</label>
+						</div>
 
-					<div class="text-sm">
-						<a href="/" class="font-medium text-indigo-600 hover:text-indigo-500">
-							Forgot your password?
-						</a>
+						<div class="text-sm">
+							<a href="/" class="font-medium text-indigo-600 hover:text-indigo-500">
+								Forgot your password?
+							</a>
+						</div>
 					</div>
-				</div>
+				{/if}
 
 				<div>
 					<button
 						type="submit"
 						class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-						>Sign in</button
+						>{$tabStatus.title}</button
 					>
 				</div>
 			</form>
@@ -105,7 +108,7 @@
 					<div>
 						<a
 							href="/"
-							class="w-full inline-flex justify-center py-2 px-10 border border-gray-300 shadow-xl rounded-md  bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 " 
+							class="w-full inline-flex justify-center py-2 px-10 border border-gray-300 shadow-xl rounded-md  bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 "
 						>
 							<span class="sr-only">Sign in with Google</span>
 
