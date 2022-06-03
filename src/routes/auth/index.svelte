@@ -1,6 +1,16 @@
 <script>
-	import {tabStatus, TABS} from '$lib/store/authStore'
-	
+	import { onAuthStateChanged } from 'firebase/auth';
+	import { tabStatus, TABS, signIn, register, signInWithGoogle } from '$lib/store/authStore';
+	import {emailValidation} from '$lib/Forms/validation';
+
+	let regex = '/^[+*][0-9*+]{1,}$|^[0-9*+]{1,}$/g';
+
+	export let email = '';
+	export let isEmailValid = 'false';
+	export let password = '';
+	export let passwordCheck = '';
+
+	export let isButtonEnabled = false;
 </script>
 
 <div id="containerAuth" class="min-h-full flex flex-col py-12 sm:px-6 lg:px-8">
@@ -9,8 +19,10 @@
 		{#each Object.keys(TABS) as tab}
 			<div
 				class={`${
-					tabStatus === TABS[tab] ? 'text-gray-900 shadow-lg' : 'text-gray-500 hover:text-gray-700 shadow-sm'
-				} text-gray-900 b" rounded-lg group relative min-w-0  overflow-hidden bg-white py-4 px-4 text-sm font-medium text-center hover:bg-gray-50 focus:z-10 cursor-pointer `}
+					tabStatus === TABS[tab]
+						? 'text-gray-900 shadow-lg'
+						: 'text-gray-500 hover:text-gray-700 shadow-sm'
+				} text-gray-900 rounded-lg group relative min-w-0  overflow-hidden bg-white py-4 px-14 text-sm font-medium text-center hover:bg-gray-50 focus:z-10 cursor-pointer `}
 				on:click={() => ($tabStatus = TABS[tab])}
 			>
 				<span>{TABS[tab].title}</span>
@@ -37,33 +49,62 @@
 			<form class="space-y-6" action="/" method="POST">
 				<div>
 					<label for="email" class="block text-sm font-medium text-gray-700"> Email address </label>
-					<div class="mt-1">
+					<div class="mt-1 flex flex-row-reverse ">
+						<!-- <svg class="w-5 h-5 mx-1 self-center text-gray-500 dark:text-gray-400" fill="currentColor" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg"><path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path></svg> -->
 						<input
 							id="email"
 							name="email"
 							type="email"
+							placeholder="example@gmail.com"
 							autocomplete="email"
 							required
-							class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+							class=" valid:siblings:text-green-500 appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+							bind:value={email}
+							on:input={(e) => console.log(e)}
 						/>
+						<svg
+							class=" w-5 h-5 mx-1 self-center  text-gray-500 dark:text-gray-400"
+							fill="currentColor"
+							viewBox="0 0 20 20"
+							xmlns="http://www.w3.org/2000/svg"
+							><path
+								d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"
+							/><path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" /></svg
+						>
 					</div>
 				</div>
 
 				<div>
 					<label for="password" class="block text-sm font-medium text-gray-700"> Password </label>
-					<div class="mt-1">
+					<div class="mt-1 flex flex-row-reverse">
 						<input
 							id="password"
 							name="password"
 							type="password"
+							placeholder="Pa55w0rd"
 							autocomplete="current-password"
+							pattern={regex}
+							title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
 							required
-							class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+							class=" valid:siblings:text-green-500 appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
 						/>
+
+						<svg
+							class="w-5 h-5 mx-1 self-center text-gray-500 dark:text-gray-400"
+							fill="currentColor"
+							viewBox="0 0 20 20"
+							xmlns="http://www.w3.org/2000/svg"
+							><path
+								fill-rule="evenodd"
+								d="M18 8a6 6 0 01-7.743 5.743L10 14l-1 1-1 1H6v2H2v-4l4.257-4.257A6 6 0 1118 8zm-6-4a1 1 0 100 2 2 2 0 012 2 1 1 0 102 0 4 4 0 00-4-4z"
+								clip-rule="evenodd"
+							/></svg
+						>
 					</div>
 				</div>
 
-				{#if $tabStatus.showActions}
+				<!-- Login actions -->
+				{#if $tabStatus.isLogin}
 					<div class="flex items-center justify-between">
 						<div class="flex items-center">
 							<input
@@ -81,6 +122,39 @@
 							<a href="/" class="font-medium text-indigo-600 hover:text-indigo-500">
 								Forgot your password?
 							</a>
+						</div>
+					</div>
+				{/if}
+
+				<!-- Register actions -->
+				{#if !$tabStatus.isLogin}
+					<div>
+						<label for="passwordRepeat" class="block text-sm font-medium text-gray-700">
+							Repeat Password
+						</label>
+						<div class="mt-1 flex">
+							<svg
+								class="w-5 h-5 mx-1 self-center text-gray-500 dark:text-gray-400"
+								fill="currentColor"
+								viewBox="0 0 20 20"
+								xmlns="http://www.w3.org/2000/svg"
+								><path
+									fill-rule="evenodd"
+									d="M18 8a6 6 0 01-7.743 5.743L10 14l-1 1-1 1H6v2H2v-4l4.257-4.257A6 6 0 1118 8zm-6-4a1 1 0 100 2 2 2 0 012 2 1 1 0 102 0 4 4 0 00-4-4z"
+									clip-rule="evenodd"
+								/></svg
+							>
+							<input
+								id="passwordRepeat"
+								name="passwordRepeat"
+								type="password"
+								autocomplete="current-password"
+								placeholder="Pa55w0rd"
+								pattern={regex}
+								title="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters"
+								required
+								class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+							/>
 						</div>
 					</div>
 				{/if}
@@ -106,14 +180,14 @@
 
 				<div class="mt-6 grid justify-center gap-3">
 					<div>
-						<a
-							href="/"
-							class="w-full inline-flex justify-center py-2 px-10 border border-gray-300 shadow-xl rounded-md  bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 "
+						<div
+							class="w-full inline-flex justify-center py-2 px-10 border border-gray-300 shadow-xl rounded-md  bg-white text-sm font-medium text-gray-500 cursor hover:bg-gray-50 cursor-pointer"
+							on:click={signInWithGoogle}
 						>
 							<span class="sr-only">Sign in with Google</span>
 
-							<img class="w-7 h-7" src="google.svg" alt="Google Icon" />
-						</a>
+							<img class="w-7 h-7 " src="google.svg" alt="Google Icon" />
+						</div>
 					</div>
 				</div>
 			</div>

@@ -1,3 +1,12 @@
+<script context="module">
+	export async function load({ url, session }) {
+		if (/^\/auth\/(.*)/.test(url.path) && session.user === '') {
+			return { redirect: '/', status: 302 };
+		}
+		return { props: {} };
+	}
+</script>
+
 <script>
 	import NavBar from '$lib/Components/UI/NavBar.svelte';
 	import 'virtual:windi.css';
@@ -10,19 +19,18 @@
 	import { getAuth, onAuthStateChanged } from 'firebase/auth';
 	import { userIsLogged } from '$lib/store/authStore';
 
-	// onMount(() => {
-	// 	const auth = getAuth();
-	// 	onAuthStateChanged(auth, (user) => {
-	// 		if (user) {
-	// 			console.log(user);
-	// 			userIsLogged.update(() => true);
-	// 		} else {
-	// 			console.log('User not authenticated');
-	// 			userIsLogged.update(() => false);
-	// 			goto('auth/');
-	// 		}
-	// 	});
-	// });
+	onMount(() => {
+		const auth = getAuth();
+		onAuthStateChanged(auth, (user) => {
+			if (user) {
+				console.log(user);
+				userIsLogged.update(() => true);
+			} else {
+				console.log('User not authenticated');
+				userIsLogged.update(() => false);
+			}
+		});
+	});
 </script>
 
 <NavBar />

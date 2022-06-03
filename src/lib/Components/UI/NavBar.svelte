@@ -1,5 +1,5 @@
 <script>
-	import { userIsLogged, profileMenuStatus } from '$lib/store/authStore';
+	import { userIsLogged, profileMenuStatus, avatarURL } from '$lib/store/authStore';
 
 	import { fly, slide } from 'svelte/transition';
 
@@ -107,7 +107,7 @@
 							aria-haspopup="true"
 						>
 							<span class="sr-only">Open user menu</span>
-							<img class="h-8 w-8 rounded-full" src="/defaultUser.svg" alt="User" />
+							<img class="h-8 w-8 rounded-full" src={$avatarURL} alt="User" referrerpolicy="no-referrer" />
 						</button>
 					</div>
 					<!-- END Profile Icon-->
